@@ -1,0 +1,7 @@
+DeviceProcessEvents
+| where AccountName !in~ ("") // Add whichever user is fine to do this
+| where InitiatingProcessFileName in~("cmd.exe", "explorer.exe", "powershell.exe")
+| where ProcessCommandLine has_any ("") // Add whatever commands you feel like you want to monitor
+| sort by TimeGenerated desc
+
+Sometimes a common FP with this is that the original source file won't show in the logs, check Device Timeline for those commands it might not be a user.
