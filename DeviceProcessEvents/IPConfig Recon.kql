@@ -1,0 +1,11 @@
+DeviceProcessEvents
+| where AccountName !in~ ("system") // Not interested in seeing system, we're looking for users 
+| where ProcessCommandLine has "ipconfig"
+| project TimeGenerated, AccountName, DeviceName, ProcessCommandLine
+| join kind=inner (
+    DeviceProcessEvents
+    | where ProcessCommandLine has_any ("") // Use this to search for whatever commands you think are interesting
+    | where InitiatingProcessFileName has_any ("cmd", "explorer", "powershell")
+    )
+    on $left.AccountName == $right.AccountName
+| summarize Commands = make_set(ProcessCommandLine1) by AccountName, DeviceName, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine
