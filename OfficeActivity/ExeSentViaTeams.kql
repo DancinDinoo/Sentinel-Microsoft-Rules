@@ -1,0 +1,5 @@
+OfficeActivity
+| where RecordType =~ "SharePointFileOperation" 
+| where SourceRelativeUrl has "Microsoft Teams Chat Files" 
+| where Operation =~ "FileUploaded" 
+| where SourceFileExtension == "exe"
