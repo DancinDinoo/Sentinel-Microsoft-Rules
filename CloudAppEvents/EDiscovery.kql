@@ -1,0 +1,7 @@
+CloudAppEvents
+| extend Object = tostring(RawEventData.ObjectId)
+| extend SearchedAccounts = tostring(RawEventData.ExchangeLocations)
+| where ActionType = "SearchCreated"
+| project TimeGenerated, AccountDisplayName, SearchedAccounts, Object, ActionType
+
+This was created because despite Defender having an EDiscovery rule it can spam with large volume and I couldn't find a way supress/allowlist, so I wrote my own rule.
