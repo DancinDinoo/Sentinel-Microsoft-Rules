@@ -1,0 +1,23 @@
+Believe this was written by @reprise_99 on Twitter or reprise99 on Github
+
+AuditLogs
+| where TargetResources has "PhoneNumber"
+| where OperationName =~ "Update user"
+| extend InitiatingUser = parse_json(tostring(InitiatedBy.user)).userPrincipalName
+| extend UserPrincipalName = parse_json(tostring(TargetResources[0].userPrincipalName))
+| mv-apply Test = TargetResources on (
+    extend TargettedResource = Test.displayName
+| mv-apply ModProp = Test.modifiedProperties on (
+    where ModProp.displayName == "StrongAuthenticationUserDetails"
+| extend NewValue = tostring(ModProp.newValue)
+| extend OldValue = tostring(ModProp.oldValue)
+))
+| project TimeGenerated, UserPrincipalName, InitiatingUser, NewValue, OldValue
+| mv-expand NV = todynamic(NewValue)
+| mv-expand OV = todynamic(OldValue)
+| extend ChangedToNumber = tostring(NV.PhoneNumber)
+| extend InitialNumber = tostring(OV.PhoneNumber)
+| where isnotempty(ChangedToNumber)
+| project TimeGenerated, UserPrincipalName, InitiatingUser, InitialNumber, ChangedToNumber
+| summarize CountOfUsers = dcount(tostring(InitiatingUser)), ChangedUsers = make_set(UserPrincipalName) by ChangedToNumber
+| where CountOfUsers > 1
