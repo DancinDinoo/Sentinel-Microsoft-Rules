@@ -1,0 +1,5 @@
+let Processes = pack_array('powershell','pwsh','cmd');
+DeviceProcessEvents
+| where InitiatingProcessParentFileName has_any (Processes)
+| where ProcessCommandLine contains "ntdsutil"
+| project TimeGenerated, DeviceName, AccountName, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessParentFileName
