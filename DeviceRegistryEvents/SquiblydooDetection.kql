@@ -1,0 +1,9 @@
+DeviceRegistryEvents
+| where TimeGenerated > ago(90d)
+| where InitiatingProcessFileName == "regsvr32.exe"
+| where ActionType in~("RegistryValueSet", "RegistryKeyCreated")
+| where InitiatingProcessCommandLine has_any ("http", "https", "scrobj.dll", ".ocx") 
+    and not(InitiatingProcessCommandLine has_any ("")
+| project TimeGenerated, DeviceName, InitiatingProcessAccountName, InitiatingProcessParentFileName, InitiatingProcessFileName, ActionType, InitiatingProcessCommandLine
+    
+// You will find a fair few legitimate windows .ocx files, I've left the and not in so you can add these to the list as you find appropriate
