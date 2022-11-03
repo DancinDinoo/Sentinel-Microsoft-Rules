@@ -2,7 +2,7 @@ DeviceRegistryEvents
 | where TimeGenerated > ago(90d)
 | where InitiatingProcessFileName == "regsvr32.exe"
 | where ActionType in~("RegistryValueSet", "RegistryKeyCreated")
-| where InitiatingProcessCommandLine has_any ("http", "https", "scrobj.dll", ".ocx") 
+| where InitiatingProcessCommandLine has_any ("http", "https", "scrobj.dll", ".ocx", "ooccxx") 
     and not(InitiatingProcessCommandLine has_any ("")
 | project TimeGenerated, DeviceName, InitiatingProcessAccountName, InitiatingProcessParentFileName, InitiatingProcessFileName, ActionType, InitiatingProcessCommandLine
     
