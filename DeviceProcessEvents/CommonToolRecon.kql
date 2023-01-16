@@ -1,7 +1,6 @@
 DeviceProcessEvents
-| where AccountName !in~ ("") // Add whichever user is fine to do this
-| where InitiatingProcessFileName in~("cmd.exe", "explorer.exe", "powershell.exe")
-| where ProcessCommandLine has_any ("") // Add whatever commands you feel like you want to monitor
-| sort by TimeGenerated desc
-
-Sometimes a common FP with this is that the original source file won't show in the logs, check Device Timeline for those commands it might not be a user.
+| where AccountName !in~ ("root", "system")
+| where ProcessCommandLine has_any ("arp", "whoami", "netstat", "nslookup", "nltest", "domain", "tasklist", "net", "route")
+| summarize Count = dcount(FileName), make_set(ProcessCommandLine) by AccountName, DeviceName, InitiatingProcessFileName
+| where Count >= 3
+| sort by Count
