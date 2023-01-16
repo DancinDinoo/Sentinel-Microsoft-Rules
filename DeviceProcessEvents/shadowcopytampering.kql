@@ -1,0 +1,3 @@
+DeviceProcessEvents
+| where ProcessCommandLine has_any ("shadows", "shadowcopy", "shadowstorage", "vssadmin")
+    and ProcessCommandLine has_any ("delete", "resize")
