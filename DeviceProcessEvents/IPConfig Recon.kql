@@ -1,11 +1,17 @@
 DeviceProcessEvents
-| where AccountName !in~ ("system") // Not interested in seeing system, we're looking for users 
+| where AccountName != "system"
 | where ProcessCommandLine has "ipconfig"
 | project TimeGenerated, AccountName, DeviceName, ProcessCommandLine
 | join kind=inner (
     DeviceProcessEvents
-    | where ProcessCommandLine has_any ("") // Use this to search for whatever commands you think are interesting
-    | where InitiatingProcessFileName has_any ("cmd", "explorer", "powershell")
+    | where ProcessCommandLine has_any ("arp", "whoami", "netstat", "route", "echo", "systeminfo", "nltest", "net", "tasklist", "ping")
+    | where InitiatingProcessFileName !in~ ("UmbrellaDiagnostic.exe")
     )
     on $left.AccountName == $right.AccountName
-| summarize Commands = make_set(ProcessCommandLine1) by AccountName, DeviceName, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine
+| summarize Count = dcount(FileName), OtherCommands = make_set(ProcessCommandLine1), IPConfig = make_set(ProcessCommandLine)
+    by
+    DeviceName,
+    InitiatingProcessFileName,
+    AccountName
+| where Count >= 3
+| sort by Count
