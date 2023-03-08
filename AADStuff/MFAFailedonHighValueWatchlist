@@ -1,0 +1,13 @@
+let endtime = todatetime(7d);
+let watchlist = (_GetWatchlist('HVU') | project UserPrincipalName);
+let aadFunc = (Fails:string){
+table(Fails)
+    | where TimeGenerated > ago(7d)
+    | where ResultDescription has_any ("MFA", "second factor", "multi-factor", "second factor") or ResultType in (50074, 50076, 50079, 50072, 53004, 500121)
+    | where UserPrincipalName in~ (watchlist)
+};
+let aadsignin = aadFunc("SigninLogs");
+let aadNonInt = aadFunc("AADNonInteractiveUserSignInLogs");
+union isfuzzy=true aadsignin, aadNonInt
+
+// Can be adjusted for specific time frames 
