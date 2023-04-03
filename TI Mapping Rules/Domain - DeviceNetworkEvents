@@ -1,0 +1,15 @@
+let dt_lookBack = 1h;
+let ioc_lookBack = 14d;
+ThreatIntelligenceIndicator
+| where ExpirationDateTime > now()
+| where Active == true
+| where isnotempty(DomainName)
+| join kind=innerunique (
+    DeviceNetworkEvents
+    | where TimeGenerated >= ago(dt_lookBack)
+    | where isnotempty(RemoteUrl)
+    | extend Network_TimeGenerated = TimeGenerated
+    ) on $left.DomainName == $right.RemoteUrl
+    | where Network_TimeGenerated < ExpirationDateTime
+| summarize Network_TimeGenerated = arg_max(Network_TimeGenerated, *) by IndicatorId, RemoteUrl
+| project TimeSeen = Network_TimeGenerated, URL = RemoteUrl, RemoteIP, ActionType, DeviceName, InitiatingProcessAccountUpn
