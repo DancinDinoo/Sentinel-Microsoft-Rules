@@ -1,0 +1,15 @@
+let dt_lookBack = 1h;
+let ioc_lookBack = 14d;
+ThreatIntelligenceIndicator
+| where ExpirationDateTime > now()
+| where FileHashType == "SHA256"
+| where Active == "true"
+    |   join kind=innerunique (DeviceFileEvents
+        | where TimeGenerated >= ago(dt_lookBack)
+        | extend File_TimeGenerated = TimeGenerated
+        | where isnotempty(SHA256)
+        )
+on $left.FileHashValue == $right.SHA256
+| where File_TimeGenerated < ExpirationDateTime
+| summarize File_TimeGenerated = arg_max(File_TimeGenerated, *) by IndicatorId, SHA256
+| project Timeseen = File_TimeGenerated, InitiatingProcessAccountName, DeviceName, FileName, FolderPath, MD5, SHA1, SHA256
