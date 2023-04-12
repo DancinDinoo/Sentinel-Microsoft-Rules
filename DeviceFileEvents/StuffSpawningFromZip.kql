@@ -10,5 +10,5 @@ FileTypeList = make_set(FileType) // Grab the types of files we've got from the 
         by DeviceName, RequestAccountName, FileOriginReferrerUrl
 | extend FileCount = array_length(FileList) // Both these count how many unique values are in each column
 | extend FileTypeCount= array_length(FileTypeList)
-| where FileList has_any (".iso", ".img", ".cmd", ".bat", ".dll", ".db", ".dat") // These are common file types I've seen spawning from .zip files
+| where FileList has_any (".iso", ".img", ".cmd", ".bat", ".dll", ".db", ".dat", ".wsf") // These are common file types I've seen spawning from .zip files
 | project DeviceName, RequestAccountName, FileOriginReferrerUrl, FileList, FileTypeList, FileCount, FileTypeCount
