@@ -1,0 +1,5 @@
+DeviceRegistryEvents  
+| where not(InitiatingProcessFolderPath in~ (@"c:\$windows.~bt\sources\setuphost.exe", @"c:\windows\system32\bitlockerwizardelev.exe"))
+//
+| where ActionType == "RegistryValueSet"
+| where RegistryKey has "elements" and RegistryKey has_any("16000009", "250000e0") 
