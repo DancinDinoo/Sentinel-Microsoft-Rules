@@ -1,0 +1,15 @@
+let InternetFacingDevices = DeviceInfo
+| where IsInternetFacing
+| summarize arg_max(Timestamp, *) by DeviceId
+//| extend InternetFacingInfo = AdditionalFields
+//| extend  InternetFacingReason = extractjson("$.InternetFacingReason", InternetFacingInfo, typeof(string)), InternetFacingLocalPort = extractjson("$.InternetFacingLocalPort", InternetFacingInfo, typeof(int)), InternetFacingScannedPublicPort = extractjson("$.InternetFacingScannedPublicPort", InternetFacingInfo, typeof(int)), InternetFacingScannedPublicIp = extractjson("$.InternetFacingScannedPublicIp", InternetFacingInfo, typeof(string)), InternetFacingLocalIp = extractjson("$.InternetFacingLocalIp", InternetFacingInfo, typeof(string)),    InternetFacingTransportProtocol=extractjson("$.InternetFacingTransportProtocol", InternetFacingInfo, typeof(string)), InternetFacingLastSeen = extractjson("$.InternetFacingLastSeen", InternetFacingInfo, typeof(datetime))
+| distinct DeviceId;
+let ExploitableVulns = DeviceTvmSoftwareVulnerabilitiesKB
+| where IsExploitAvailable == "1"
+| distinct CveId;
+DeviceTvmSoftwareVulnerabilities
+| where CveId in~ (ExploitableVulns)
+| where DeviceId in~(InternetFacingDevices)
+| summarize TotalExploitableVulnerabilities = dcount(CveId), Cve's = make_set(CveId), VulnerableSoftware = make_set(SoftwareName), RecommendedSecurityUpdates = make_set(RecommendedSecurityUpdate) by DeviceName
+
+// Commented out the Info bit, can add back in and remove the rest to see why/what is internet facing
