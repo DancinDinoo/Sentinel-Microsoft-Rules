@@ -1,0 +1,4 @@
+DeviceProcessEvents
+| where FileName == "powershell.exe"
+| where ProcessCommandLine has_any('-nop', '-noni', 'invoke-expression', 'iex', '.downloadstring', 'downloadfile', '-e', '-en', '-enc', '-encodedcommand', 'invoke-webrequest', '-uri')
+| sort by TimeGenerated
