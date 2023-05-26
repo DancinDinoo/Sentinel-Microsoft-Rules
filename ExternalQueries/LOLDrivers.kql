@@ -1,0 +1,5 @@
+DeviceEvents
+| where ActionType == "DriverLoad"
+| where SHA256 in (externaldata(hash:string)["https://github.com/magicsword-io/LOLDrivers/raw/main/detections/hashes/samples.sha256"])
+
+// Lists vulnerable drivers extracted from Repo
