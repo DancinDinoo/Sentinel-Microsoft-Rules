@@ -1,0 +1,6 @@
+DeviceProcessEvents
+| where FileName =~ 'rundll32.exe'
+and ProcessCommandLine has 'comsvcs.dll'
+and ProcessCommandLine has_any ('full','MiniDump')
+| where not (ProcessCommandLine matches regex @'{[\w\d]{8}-[\w\d]{4}-[\w\d]{4}-[\w\d]{4}-[\w\d]{12}}'
+and ProcessCommandLine matches regex @'(\d{2}_){3}' )
