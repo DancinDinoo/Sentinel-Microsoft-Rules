@@ -1,0 +1,8 @@
+DeviceNetworkEvents
+| extend Test1 = trim_start(@'.*:\/.', RemoteUrl)
+| extend Test2 = trim_end(@'\/.*', Test1)
+| extend TLD = split(split(Test2, '.')[-1], ':')[-1]
+| where isnotempty(RemoteUrl)
+| project RemoteUrl, Test1, Test2, TLD
+
+// Extracts the TLD from a URL request, which can then be used to query for suspicious TLD requests stuff like .zip
