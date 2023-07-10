@@ -1,0 +1,4 @@
+DeviceProcessEvents 
+| where FileName =~ "bcdedit.exe"
+| where ProcessCommandLine has "set"
+| where ProcessCommandLine has_all ("recoveryenabled", "no") or ProcessCommandLine has_all ("bootstatuspolicy", "ignoreallfailures") 
