@@ -3,3 +3,5 @@ DeviceRegistryEvents
 //
 | where ActionType == "RegistryValueSet"
 | where RegistryKey has "elements" and RegistryKey has_any("16000009", "250000e0") 
+
+// The registry keys are related to recoveryenabled and bootstatuspolicy
