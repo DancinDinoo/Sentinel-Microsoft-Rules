@@ -1,0 +1,7 @@
+DeviceProcessEvents
+| where InitiatingProcessParentFileName has "excel.exe" or InitiatingProcessFileName =~ "excel.exe"
+| where InitiatingProcessFileName in~ ("excel.exe","regsvr32.exe")
+| where FileName in~ ("regsvr32.exe", "rundll32.exe")
+| where ProcessCommandLine has @"..\"
+
+// Qakbot IOC
