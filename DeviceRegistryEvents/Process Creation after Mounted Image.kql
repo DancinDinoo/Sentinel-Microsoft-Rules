@@ -1,0 +1,16 @@
+let Allowlist = dynamic([""]);
+DeviceRegistryEvents
+| where ActionType == "RegistryValueSet" and RegistryKey == @"HKEY_LOCAL_MACHINE\SYSTEM\MountedDevices" and RegistryValueName startswith @"\DosDevices\"
+| extend Folder = toupper(replace(@'\\DosDevices\\(\w:)',@'\1',RegistryValueName)) // Extract the folder name
+// Get process creations that have the mounted image as the FolderPath
+| join kind=inner 
+    (
+    DeviceProcessEvents
+    | extend Folder = toupper(replace(@'(\w:)\\.*',@'\1',FolderPath))
+    ) on DeviceId, Folder
+    | where SHA256 !in (Allowlist)
+// If needed, exclude servers from the results.
+
+// Taken from a blog post from 
+Mehmet Ergene
+@Cyb3rMonk
