@@ -1,0 +1,17 @@
+// Get mounted devices and extract the folder name
+let allowlist = pack_array("");
+DeviceRegistryEvents
+| where ActionType == "RegistryValueSet" and RegistryKey == @"HKEY_LOCAL_MACHINE\SYSTEM\MountedDevices" and RegistryValueName startswith @"\DosDevices\"
+| extend Folder = toupper(replace(@'\\DosDevices\\(\w:)',@'\1',RegistryValueName)) // Extract the folder name
+// Get network connections of processes that have the mounted image as the InitiatingProcessFolderPath
+| join kind=inner 
+    (
+    DeviceNetworkEvents
+    | extend Folder = toupper(replace(@'(\w:)\\.*',@'\1',InitiatingProcessFolderPath))
+    | where InitiatingProcessFileName !in~ (allowlist)
+    ) on DeviceId, Folder
+// If needed, exclude the legitimate activity and servers
+
+\\ Taken from a blog post from 
+Mehmet Ergene
+@Cyb3rMonk
