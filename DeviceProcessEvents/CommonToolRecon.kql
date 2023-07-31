@@ -1,6 +1,6 @@
 DeviceProcessEvents
 | where AccountName !in~ ("root", "system")
-| where ProcessCommandLine has_any ("arp", "whoami", "netstat", "nslookup", "nltest", "domain", "tasklist", "net", "route")
+| where ProcessCommandLine has_any ("arp", "whoami", "netstat", "nslookup", "nltest", "domain", "tasklist", "net", "route", "tzlist" "time", "tracert", "ping", "wmic", "admin$", "c$", "taskkill", "echo", "srvany", "instsrv")
 | summarize Count = dcount(FileName), make_set(ProcessCommandLine) by AccountName, DeviceName, InitiatingProcessFileName
 | where Count >= 3
 | sort by Count
