@@ -1,5 +1,4 @@
 let dt_lookBack = 1h;
-let ioc_lookBack = 14d;
 ThreatIntelligenceIndicator
 | where ExpirationDateTime > now()
 | where FileHashType == "SHA256"
