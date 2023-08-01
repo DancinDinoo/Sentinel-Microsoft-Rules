@@ -1,0 +1,23 @@
+let dt_lookBack = 1h;
+let Domains = ThreatIntelligenceIndicator
+| where ExpirationDateTime > now()
+| where Active == true
+| where isnotempty(DomainName)
+| project DomainName;
+let DNE = DeviceNetworkEvents
+    | extend Table = "DeviceNetworkEvents"
+    | where TimeGenerated >= ago(dt_lookBack)
+    | where isnotempty(RemoteUrl)
+    | where RemoteUrl has_any (Domains)
+    | project Table, TimeGenerated, InitiatingProcessAccountUpn, DeviceName, LocalIP, RemoteIP, RemoteUrl;
+let Umbrella = Cisco_Umbrella
+    | extend Table = "CiscoUmbrella"
+    | where TimeGenerated >= ago(dt_lookBack)
+    | extend TrimmedDNS = trim(@"[^\w]+",DnsQueryName)
+    | extend User = parse_json(Identities)[1]
+    | extend Device = parse_json(Identities)[0]
+    | where TrimmedDNS has_any (Domains)
+    | project Table, TimeGenerated, TrimmedDNS, User, Device;
+union DNE, Umbrella
+
+// Set to Hour Lookback and 14 Days Info
