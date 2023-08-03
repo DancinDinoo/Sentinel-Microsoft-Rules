@@ -1,0 +1,9 @@
+DeviceProcessEvents
+| where FileName =~ "powershell.exe" 
+| where InitiatingProcessFileName =~ "wscript.exe"
+or InitiatingProcessParentFileName =~ "wscript.exe"
+or InitiatingProcessFileName =~ "csript.exe"
+or InitiatingProcessParentFileName =~ "csript.exe"
+| sort by TimeGenerated
+
+// Gootkit IOC
