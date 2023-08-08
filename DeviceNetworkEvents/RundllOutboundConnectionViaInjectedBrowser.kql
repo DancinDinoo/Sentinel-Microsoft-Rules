@@ -1,0 +1,6 @@
+DeviceNetworkEvents
+| where InitiatingProcessVersionInfoOriginalFileName =~ "rundll32.exe"
+| where InitiatingProcessParentFileName has_any ("chrome", "edge", "firefox")
+| where not(ipv4_is_private(RemoteUrl))
+| project TimeGenerated, DeviceName, InitiatingProcessAccountName, InitiatingProcessParentFileName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine, RemoteIP, RemoteUrl, RemotePort
+
