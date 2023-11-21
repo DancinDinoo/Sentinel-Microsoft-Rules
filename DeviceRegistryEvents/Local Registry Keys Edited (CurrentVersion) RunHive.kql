@@ -1,0 +1,10 @@
+DeviceRegistryEvents
+| where ActionType == "RegistryValueSet"
+| where RegistryKey matches regex @"(?i)H.+\\.*\\SOFTWARE\\.*" or RegistryKey matches regex @"(?i)H.+\\Software\\.*"
+| where RegistryKey contains "CurrentVersion"
+| where InitiatingProcessVersionInfoOriginalFileName == "reg.exe"
+| extend iselevated = iff(InitiatingProcessIntegrityLevel == "High", true, false)
+| project TimeGenerated, DeviceName, InitiatingProcessAccountName, InitiatingProcessParentFileName, InitiatingProcessCommandLine, RegistryKey, RegistryValueData, iselevated
+| sort by TimeGenerated
+
+// Anything with a High is running potentially via System
