@@ -1,0 +1,8 @@
+DeviceRegistryEvents
+| where ActionType == "RegistryValueSet"
+| where RegistryValueName has_any ("wsf", "js", "wsh", "ps1", "bat", "vbs")
+| where RegistryKey matches regex @"H.+\\.+\\Local Settings\\.+"
+| project TimeGenerated, DeviceName, InitiatingProcessAccountName, RegistryKey, RegistryValueData, RegistryValueName
+| sort by TimeGenerated
+
+// RunService changes match the above Regex
