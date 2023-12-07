@@ -1,0 +1,8 @@
+DeviceFileEvents
+| where TimeGenerated > ago(30d)
+| where isnotempty(FileOriginReferrerUrl)
+| where not (FileOriginReferrerUrl matches regex @"[a-zA-Z]:\\.+")
+| where FileName endswith ".msi"
+| where ActionType == "FileCreated"
+| project TimeGenerated, ActionType, DeviceName, FileName, FileOriginReferrerUrl, InitiatingProcessAccountUpn
+| sort by TimeGenerated
