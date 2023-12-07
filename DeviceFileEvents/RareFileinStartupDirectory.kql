@@ -1,0 +1,7 @@
+DeviceFileEvents
+| where ActionType == "FileCreated"
+| where FolderPath matches regex @"(?i)C:\\Users\\.*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs"
+| where FileName endswith ".lnk"
+| project SHA256 = InitiatingProcessSHA256, DeviceId, InitiatingProcessAccountName, Timestamp, ReportId, FileName, FolderPath
+| invoke FileProfile("SHA256")
+| where GlobalPrevalence < 500
