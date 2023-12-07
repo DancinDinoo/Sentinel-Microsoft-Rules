@@ -1,0 +1,9 @@
+let Process = DeviceProcessEvents
+| where InitiatingProcessParentFileName has_any (@"powershell.exe", @"pwsh.exe", @"powershell_ise.exe") 
+| where InitiatingProcessFileName has @"mshta.exe"
+| project TimeGenerated, DeviceName, AccountDomain, AccountName;
+Process
+    | join (DeviceNetworkEvents
+    | where RemoteIP !has "" or RemoteUrl !has ""
+    | project DeviceName, RemoteIP, RemoteUrl
+) on DeviceName
