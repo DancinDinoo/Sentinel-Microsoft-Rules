@@ -1,0 +1,20 @@
+let ExcludedNets = datatable(ExcludedNet: string)
+['100.0.0.0/16', '200.200.200.0/24']; 
+search in (DeviceNetworkEvents) "tcp" and "connectionsuccess" and "public" 
+| where TimeGenerated > ago(30d)
+| where isempty(RemoteUrl)
+| evaluate ipv4_lookup(ExcludedNets, RemoteIP, ExcludedNet, return_unmatched = true)
+| where isempty(ExcludedNet)
+| where not(InitiatingProcessFileName matches regex @'(?i)^(msedge|chrome|firefox)\.exe$')
+| where (Protocol == "Tcp" and ActionType == "ConnectionSuccess" and RemoteIPType == "Public") and InitiatingProcessFileName endswith ".exe" and not(RemotePort in (80, 443)) 
+| extend InitiatingProcessFileName=tolower(InitiatingProcessFileName)
+| summarize
+  Hashes=make_set(InitiatingProcessMD5),
+  DeviceCount=count_distinct(DeviceId),
+  SampleProcess=any(InitiatingProcessCommandLine),
+  SampleRemoteIP=any(RemoteIP),
+  Devices=make_set(DeviceName),
+  Ports=make_set(RemotePort) by InitiatingProcessFileName
+| where DeviceCount < 4
+| extend RemoteIP_country = tostring(parse_json(geo_info_from_ip_address(SampleRemoteIP)).country) 
+| sort by DeviceCount as
