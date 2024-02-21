@@ -1,0 +1,9 @@
+let LolBins = externaldata(Filename:string)
+[h@"https://lolbas-project.github.io/api/lolbas.csv"]
+    with(format="csv")
+| where Filename endswith ".exe"
+| distinct Filename;
+DeviceProcessEvents
+| where InitiatingProcessFolderPath endswith @'\onenote.exe' or InitiatingProcessFolderPath endswith @"\winword.exe" or InitiatingProcessFolderPath endswith @"\excel.exe" or InitiatingProcessFileName endswith @"\powerpnt.exe" or InitiatingProcessFolderPath endswith @"\eqnedt32.exe" or InitiatingProcessFolderPath endswith @"\fltldr.exe" or InitiatingProcessFolderPath endswith @"\mspub.exe" or InitiatingProcessFolderPath endswith @"\msaccess.exe" or InitiatingProcessFolderPath endswith @"\VISIO.exe" or InitiatingProcessFolderPath endswith @"\wordview.exe"
+| where FolderPath contains @"\AppData\" or FolderPath contains @"\Users\Public\" or FolderPath contains @"\ProgramData\" or FolderPath contains @"\Windows\Tasks\" or FolderPath contains @"\Windows\Temp\" or FolderPath contains @"\Windows\System32\Tasks\"
+| where FileName in~(LolBins)
