@@ -17,3 +17,4 @@ DeviceProcessEvents
 ))
 
 // Identifies any ParentProcesses along with InitiatingProcesses related to the OfficeSuite
+// Based on this https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_office_susp_child_processes.yml along with The LOLBAS Project
