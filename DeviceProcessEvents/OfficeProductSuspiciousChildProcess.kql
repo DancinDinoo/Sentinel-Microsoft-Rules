@@ -3,7 +3,17 @@ let LolBins = externaldata(Filename:string)
     with(format="csv")
 | where Filename endswith ".exe"
 | distinct Filename;
-DeviceProcessEvents
-| where InitiatingProcessFolderPath endswith @'\onenote.exe' or InitiatingProcessFolderPath endswith @"\winword.exe" or InitiatingProcessFolderPath endswith @"\excel.exe" or InitiatingProcessFileName endswith @"\powerpnt.exe" or InitiatingProcessFolderPath endswith @"\eqnedt32.exe" or InitiatingProcessFolderPath endswith @"\fltldr.exe" or InitiatingProcessFolderPath endswith @"\mspub.exe" or InitiatingProcessFolderPath endswith @"\msaccess.exe" or InitiatingProcessFolderPath endswith @"\VISIO.exe" or InitiatingProcessFolderPath endswith @"\wordview.exe"
+(union isfuzzy=true 
+(DeviceProcessEvents
+| where InitiatingProcessFolderPath endswith @'\onenote.exe' or InitiatingProcessFolderPath endswith @"\winword.exe" or InitiatingProcessFolderPath endswith @"\excel.exe" or InitiatingProcessFileName endswith @"\powerpnt.exe" or InitiatingProcessFolderPath endswith @"\eqnedt32.exe" or InitiatingProcessFolderPath endswith @"\fltldr.exe" or InitiatingProcessFolderPath endswith @"\mspub.exe" or InitiatingProcessFolderPath endswith @"\msaccess.exe" 
+| where FileName in(LolBins)
 | where FolderPath contains @"\AppData\" or FolderPath contains @"\Users\Public\" or FolderPath contains @"\ProgramData\" or FolderPath contains @"\Windows\Tasks\" or FolderPath contains @"\Windows\Temp\" or FolderPath contains @"\Windows\System32\Tasks\"
-| where FileName in~(LolBins)
+| project TimeGenerated, AccountUpn, DeviceName, InitiatingProcessParentFileName, InitiatingProcessFileName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessFolderPath, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine),
+(
+DeviceProcessEvents
+| where InitiatingProcessParentFileName in~("onenote.exe", "winword.exe", "excel.exe", "powerpnt.exe", "eqnedt32.exe", "fltldr.exe", "mspub.exe", "msaccess.exe") 
+| where InitiatingProcessFileName in~(LolBins) and InitiatingProcessFolderPath contains @"\AppData\" or InitiatingProcessFolderPath contains @"\Users\Public\" or InitiatingProcessFolderPath contains @"\ProgramData\" or InitiatingProcessFolderPath contains @"\Windows\Tasks\" or InitiatingProcessFolderPath contains @"\Windows\Temp\" or InitiatingProcessFolderPath contains @"\Windows\System32\Tasks\"
+| project TimeGenerated, AccountUpn, DeviceName, InitiatingProcessParentFileName, InitiatingProcessFileName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessFolderPath, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine
+))
+
+// Identifies any ParentProcesses along with InitiatingProcesses related to the OfficeSuite
