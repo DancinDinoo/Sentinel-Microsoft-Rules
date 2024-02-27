@@ -4,7 +4,7 @@ DeviceProcessEvents
 | project TimeGenerated, AccountName, DeviceName, ProcessCommandLine
 | join kind=inner (
     DeviceProcessEvents
-    | where ProcessCommandLine has_any ("arp", "whoami", "netstat", "route", "echo", "systeminfo", "nltest", "net", "tasklist", "ping")
+    | where ProcessCommandLine has_any ("arp", "whoami", "netstat", "route", "echo", "systeminfo", "nltest", "net", "tasklist", "ping", "tzlist" "time", "tracert")
     | where InitiatingProcessFileName !in~ ("UmbrellaDiagnostic.exe")
     )
     on $left.AccountName == $right.AccountName
