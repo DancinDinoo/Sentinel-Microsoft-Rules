@@ -1,0 +1,8 @@
+DeviceProcessEvents
+| where FileName == "reg.exe"
+| where ProcessCommandLine contains "fDenyTSConnections"
+| sort by TimeGenerated
+
+// Searching for commands looking like the below
+reg add "HKLM\SYSTEM\CurrrentControlSet\Control\Terminal Server" /f /v fDenyTSConnections /t REG_DWORD /d 0
+Enables remote desktop connectivity on an endpoint 
