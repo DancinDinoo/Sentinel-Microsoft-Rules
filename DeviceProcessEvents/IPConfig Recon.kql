@@ -5,7 +5,6 @@ DeviceProcessEvents
 | join kind=inner (
     DeviceProcessEvents
     | where ProcessCommandLine has_any ("arp", "whoami", "netstat", "route", "echo", "systeminfo", "nltest", "net", "tasklist", "ping", "tzlist" "time", "tracert")
-    | where InitiatingProcessFileName !in~ ("UmbrellaDiagnostic.exe")
     )
     on $left.AccountName == $right.AccountName
 | summarize Count = dcount(FileName), OtherCommands = make_set(ProcessCommandLine1), IPConfig = make_set(ProcessCommandLine)
