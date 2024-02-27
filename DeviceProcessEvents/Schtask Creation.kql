@@ -1,5 +1,4 @@
 DeviceProcessEvents
 | where FileName == "schtasks.exe"
-| where ProcessCommandLine has_any ("system", "rundll", "onstart")
-| where InitiatingProcessFileName in ("cmd.exe", "powershell.exe", "explorer.exe")
+| where ProcessCommandLine has_any ("system", "rundll", "onstart", "Defender")
 // Possible MustangPanda IOC 
