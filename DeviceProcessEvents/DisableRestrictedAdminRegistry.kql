@@ -1,0 +1,9 @@
+DeviceProcessEvents
+| where FileName == "reg.exe"
+| where ProcessCommandLine contains "DisableRestrictedAdmin"
+| sort by TimeGenerated
+
+// We're searching very generally for Gootloader IOCs, command lines looking something like the below
+reg add “hklm\system\currentcontrolset\control\lsa” /f /v DisableRestrictedAdmin /t REG_DWORD /d 0
+This enables restrictedadmin mode on an endpoint allowing for someone to login without the use of credentials
+https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/dn408190(v=ws.11)
