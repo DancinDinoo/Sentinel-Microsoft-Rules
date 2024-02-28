@@ -1,6 +1,6 @@
 DeviceProcessEvents
 | where FileName == "reg.exe"
-| where ProcessCommandLine contains "DisableRestrictedAdmin"
+| where ProcessCommandLine contains "DisableRestrictedAdmin" // has_all @("DisableRestrictedAdmin", "hklm\system\currentcontrolset\control\lsa") May work but may require two contains depending on how has handles it
 | sort by TimeGenerated
 
 // We're searching very generally for Gootloader IOCs, command lines looking something like the below
