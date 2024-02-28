@@ -1,6 +1,6 @@
 DeviceProcessEvents
 | where FileName == "reg.exe"
-| where ProcessCommandLine contains "fDenyTSConnections"
+| where ProcessCommandLine contains "fDenyTSConnections" // HKLM\SYSTEM\CurrrentControlSet\Control\Terminal Server can also be included via another contains to make more accurate
 | sort by TimeGenerated
 
 // Searching for commands looking like the below
