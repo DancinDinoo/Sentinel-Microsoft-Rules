@@ -1,0 +1,28 @@
+SigninLogs
+| where TimeGenerated > ago(1h)
+| where ResultType == 500121
+| extend additionalDetails_ = tostring(Status.additionalDetails)
+| where additionalDetails_ =~ "MFA denied; user declined the authentication"
+| extend AccountCustomEntity = UserPrincipalName, IPCustomEntity = IPAddress
+| summarize NumberOf500121Failures=count() by additionalDetails_, AccountCustomEntity, IPCustomEntity 
+| join kind = leftouter (
+    SigninLogs
+    | where TimeGenerated > ago(7d)
+    | where ResultType == 0
+    | summarize count()
+        by
+        UserPrincipalName,
+        Day_date = format_datetime(TimeGenerated, "yyyy/MM/dd"),
+        IPAddress
+    | summarize DaysWithSuccessInLast7=dcount(Day_date), Dates = make_set (Day_date, 7) by AccountCustomEntity=UserPrincipalName, IPCustomEntity=IPAddress
+    )
+    on AccountCustomEntity, IPCustomEntity
+| where not (DaysWithSuccessInLast7 >= 3)
+| extend IPInfo = geo_info_from_ip_address(tostring(IPCustomEntity))
+| extend
+    IPCountry = tostring(IPInfo.country),
+    IPLatitude = tostring(IPInfo.latitude),
+    IPLongitude = tostring(IPInfo.longitude)
+| project-rename MatchedIP=IPCustomEntity1
+| project-reorder additionalDetails_, AccountCustomEntity, IPCustomEntity, IPCountry
+| project-away AccountCustomEntity1, IPInfo
