@@ -1,7 +1,9 @@
 DeviceProcessEvents
-| where AccountName !in~ ("root", "system")
-| where InitiatingProcessFileName in~("cmd.exe", "powershell.exe")
-| where ProcessCommandLine has_any ("arp", "whoami", "netstat", "nslookup", "nltest", "domain", "tasklist", "net", "route", "tzlist" "time", "tracert", "ping", "wmic", "admin$", "c$", "taskkill", "echo", "srvany", "instsrv", "quser")
-| summarize Count = dcount(FileName), Files = make_set(FileName), Commands = make_set(ProcessCommandLine) by AccountName, DeviceName, InitiatingProcessFileName
-| where Count >= 3
-| sort by Count
+| where InitiatingProcessFileName in~("cmd.exe", "powershell.exe", "rundll32.exe")
+| where ProcessCommandLine has_any ("arp", "whoami", "netstat", "nslookup", "nltest", "domain", "tasklist", "net", "route", "tzlist" "time", "tracert", "ping", "wmic", "admin$", "c$", "taskkill", "echo", "srvany", "instsrv", "quser", "ipconfig")
+| summarize Count = dcount(FileName), Files = make_set(FileName), Commands = make_set(ProcessCommandLine), ParentCommands = make_set(InitiatingProcessCommandLine) by AccountName, DeviceName, InitiatingProcessFileName, InitiatingProcessParentFileName
+| where Count >= 4
+
+Detects when at least 4 windows binaries that can be used for reconnaissance are executed in a short time period potentially indicating an attacker enumerating the network.
+https://attack.mitre.org/techniques/T0840/
+https://thedfirreport.com/2024/04/01/from-onenote-to-ransomnote-an-ice-cold-intrusion/#discovery
