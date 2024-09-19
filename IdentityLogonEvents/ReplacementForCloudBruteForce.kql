@@ -1,0 +1,20 @@
+let timerange = 1h;
+let normallookback = 6h;
+let lookback = 7d;
+let bruteforcetrigger = 5; // Number of failed logins required to trigger the alert
+let AllCloudLogins = IdentityLogonEvents
+| where TimeGenerated > ago(lookback) // 1 Day worth of data
+| where Application == "Microsoft 365" // Target Cloud only
+;
+let HistoricalLogins = AllCloudLogins
+| where TimeGenerated < ago(normallookback) // Logins older than a day
+| distinct IPAddress, AccountDisplayName; // Successful logins from the past week
+let FailedCloudLogins = AllCloudLogins
+| where TimeGenerated > ago(timerange) // Last hour
+| extend FailedLogonService = tostring(AdditionalFields.["TO.CLOUD_SERVICE"]) // This is the actual service where the failures are occuring not just 365
+| where ActionType =~ "LogonFailed"; // Failed Logins
+let FailuresNotFromGoodIps = (FailedCloudLogins 
+| join kind=leftanti HistoricalLogins on IPAddress, AccountDisplayName); // We're finding failures from IPs we've not seen successful logins from in the last week for a user
+FailuresNotFromGoodIps // There's a caveat here, we WILL see IPs where the user has successfully logged on from in the 6h as these I wouldn't consider "Trusted" in the case of a brute force
+| summarize count() by bin(TimeGenerated, 1h), FailedLogonService, AccountDisplayName, Location, IPAddress, FailureReason
+| where count_  10 // Searching for more than 10 failures at once
