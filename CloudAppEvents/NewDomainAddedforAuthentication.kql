@@ -1,0 +1,5 @@
+CloudAppEvents
+| where TimeGenerated > ago(90d)
+| where ActionType in ("Set domain authentication.", "Set federation settings on domain.")
+
+// Searching for new domains that could be used as a backdoor/persistence mechanism
