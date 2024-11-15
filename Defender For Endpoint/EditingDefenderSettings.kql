@@ -1,2 +1,6 @@
-DeviceProcessEvents
-| where ProcessCommandLine has_any ("Get-MpPreference", "Add-MpPreference", "Set-MpPreference")
+DeviceEvents
+| where ActionType == "TamperingAttempt"
+| extend Target = tostring(AdditionalFields.Target)
+| extend Result = tostring(AdditionalFields.Status)
+| extend TamperingAction = tostring(AdditionalFields.TamperingAction)
+| project TimeGenerated, DeviceName, InitiatingProcessAccountName, InitiatingProcessParentFileName, InitiatingProcessFileName, Target, Result, TamperingAction
