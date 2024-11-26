@@ -1,0 +1,6 @@
+DeviceFileEvents
+| where TimeGenerated > ago(30d)
+| where FileOriginReferrerUrl startswith "http"
+| extend FileType = tostring(AdditionalFields.FileType)
+| where FileOriginReferrerUrl has (".zip")
+| project TimeGenerated, ActionType, DeviceName, FileName, FolderPath, InitiatingProcessFileName, FileOriginReferrerUrl, FileOriginUrl
