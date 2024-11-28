@@ -14,3 +14,4 @@ SigninLogs
 | where UserAgent has_any(capturegroups) or UserAgent in~ (literalmatches)
 
 // You'll find a fair bit of legitimate traffic in here, it requires quite a bit of tuning to get right.
+// UserAgent BAV2ROPC is Legacy Authentication
