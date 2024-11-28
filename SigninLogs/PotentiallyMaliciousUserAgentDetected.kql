@@ -1,0 +1,16 @@
+let MaliciousUserAgents = externaldata(http_user_agent:string) [h@"https://raw.githubusercontent.com/mthcht/awesome-lists/refs/heads/main/Lists/suspicious_http_user_agents_list.csv"]
+with(format="csv", ignorefirstrecord = true) // Community updated list of malicious user agents
+| project UserAgent = http_user_agent;
+let capturegroups = MaliciousUserAgents 
+| where UserAgent contains "*"
+| extend UserAgent = replace_string(UserAgent, "*", "")
+| distinct UserAgent;
+let literalmatches = MaliciousUserAgents
+| where UserAgent !contains "*"
+| distinct UserAgent;
+SigninLogs
+| where TimeGenerated > ago(90d)
+| where ResultType == "0"
+| where UserAgent has_any(capturegroups) or UserAgent in~ (literalmatches)
+
+// You'll find a fair bit of legitimate traffic in here, it requires quite a bit of tuning to get right.
