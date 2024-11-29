@@ -1,0 +1,7 @@
+let EmailLimit = 500; // Adjust as is appropriate for your environment
+EmailEvents
+| where TimeGenerated > ago(1h)
+| where EmailDirection == "Inbound"
+| where DeliveryAction == "Delivered"
+| summarize Senders = make_set(SenderFromAddress), EmailCount = count() by RecipientEmailAddress // Careful for No reply/Public inboxes, worth tuning these prior to implementation
+| where EmailCount > EmailLimit
