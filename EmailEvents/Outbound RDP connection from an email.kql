@@ -1,0 +1,12 @@
+let Emails = EmailAttachmentInfo
+| where FileName has ".rdp"
+| join kind=inner (EmailEvents) on NetworkMessageId
+| project EmailTimeRecieved = TimeGenerated, RecipientEmailAddress, NetworkMessageId, SenderFromAddress;
+let RDPConnections = DeviceNetworkEvents
+| where RemotePort == 3389
+| where ActionType == "ConnectionAttempt"
+| where RemoteIPType == "Public"
+| project RDPTimeGenerated = TimeGenerated, DeviceName, InitiatingProcessAccountUpn, RemoteIP;
+Emails
+| join kind=inner (RDPConnections) on $left.RecipientEmailAddress == $right.InitiatingProcessAccountUpn
+| project EmailTimeRecieved, RecipientEmailAddress, SenderFromAddress, RDPTimeGenerated, DeviceName, RemoteIP
