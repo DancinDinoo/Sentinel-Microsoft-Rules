@@ -1,0 +1,8 @@
+OfficeActivity
+| where RecordType == "MicrosoftTeams"
+| where Operation == "ChatCreated"
+| where CommunicationType == "OneOnOne"
+| extend RecipientUPN = Members.[1].UPN | extend RecipientName = Members.[1].DisplayName
+| extend SenderUPN = UserId | extend SenderDisplayName = Members.[0].DisplayName
+| where SenderDisplayName contains "Support" or SenderDisplayName contains "Help" or SenderDisplayName contains "Microsoft" or SenderDisplayName contains "Customer" or SenderDisplayName contains "Tech" or SenderDisplayName contains "Email" or SenderDisplayName contains "Service" or SenderDisplayName contains "Desk" // Generic Helpdesk/Support type terms that could be abused
+| project TimeGenerated, SenderDisplayName, SenderUPN, RecipientName, RecipientUPN, ItemName
