@@ -1,8 +1,9 @@
-let EmailCount = 100;
+let EmailLimit = 100;
 EmailEvents
 | where TimeGenerated > ago(1h)
 | where EmailDirection == "Inbound"
 | where DeliveryAction == "Delivered"
 | summarize EmailCount = count() by RecipientEmailAddress, SenderFromAddress
+| where EmailCount > EmailLimit
 
 // From Kevin Beaumonts research on new Ransomware techniques
