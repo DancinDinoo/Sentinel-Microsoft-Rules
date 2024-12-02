@@ -1,0 +1,14 @@
+let sensitivegroups = pack_array("Administrators", "Power Users", "Account Operators", "Server Operators", "Print Operators", "Backup Operators", "Replicators", "Network Configuration Operators", "Incoming Forest Trust Builders", "Domain Admins", "Domain Controllers", "Group Policy Creator Owners", "Read-only Domain Controllers", "Enterprise Read-only Domain Controllers", "Schema Admins", "Enterprise Admins", "Microsoft Exchange Servers");
+IdentityDirectoryEvents
+| where Application == "Active Directory"
+| where ActionType =~ "Group Membership Changed"
+| where isnotempty(DestinationDeviceName)
+| extend ToGroup = tostring(AdditionalFields.["TO.GROUP"]) // Group being added to
+| extend FromGroup = tostring(AdditionalFields.["FROM.GROUP"]) // Group being removed from
+| extend ActionTaken = iff(isempty(ToGroup), "Remove", "Add")
+| extend ActionedGroup = iff(isempty(ToGroup), FromGroup, ToGroup)
+| where ActionedGroup in~ (sensitivegroups) // Searching for the sensitive groups
+| extend TargetAccountId = tostring(AdditionalFields.TargetAccountId)
+| project TimeGenerated, Application, ActionTaken, InitiatingActor = AccountName, InitiatingAccountId = AccountObjectId, ActionedGroup, TargetAccountDisplayName, TargetAccountId
+
+// https://learn.microsoft.com/en-us/defender-for-identity/entity-tags
