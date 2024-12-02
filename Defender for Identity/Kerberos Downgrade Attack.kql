@@ -4,3 +4,5 @@ IdentityDirectoryEvents
 | extend NewSupportedEncryptionTypes = parse_json(tostring(AdditionalFields.["TO AccountSupportedEncryptionTypes"]))
 | where PreviousSupportedEncryptionTypes !~ "N/A" // Commonly results from devices being setup
 | project TimeGenerated, TargetDeviceName, PreviousSupportedEncryptionTypes, NewSupportedEncryptionTypes
+
+// https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/network-security-configure-encryption-types-allowed-for-kerberos
