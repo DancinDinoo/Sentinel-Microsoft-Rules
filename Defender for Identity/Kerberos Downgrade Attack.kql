@@ -1,0 +1,6 @@
+IdentityDirectoryEvents
+| where ActionType == "Account Supported Encryption Types changed"
+| extend PreviousSupportedEncryptionTypes = parse_json(tostring(AdditionalFields.["FROM AccountSupportedEncryptionTypes"]))
+| extend NewSupportedEncryptionTypes = parse_json(tostring(AdditionalFields.["TO AccountSupportedEncryptionTypes"]))
+| where PreviousSupportedEncryptionTypes !~ "N/A" // Commonly results from devices being setup
+| project TimeGenerated, TargetDeviceName, PreviousSupportedEncryptionTypes, NewSupportedEncryptionTypes
