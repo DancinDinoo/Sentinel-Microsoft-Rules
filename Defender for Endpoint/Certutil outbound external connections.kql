@@ -1,0 +1,4 @@
+DeviceNetworkEvents
+| where InitiatingProcessCommandLine contains "certutil"
+| where RemoteIPType == "Public"
+| project TimeGenerated, DeviceName, InitiatingProcessAccountName, InitiatingProcessCommandLine, LocalIPType, LocalIP, RemoteIPType,RemoteIP, RemoteUrl, RemotePort
