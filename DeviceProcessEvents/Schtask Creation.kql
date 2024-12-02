@@ -1,8 +1,4 @@
 DeviceProcessEvents
 | where FileName == "schtasks.exe"
-| where ProcessCommandLine has_any ("system","Defender", ".cmd", ".ps1", ".vbs", ".py", ".js", ".lnk", ".bat", "wscript", "cscript","rundll", "javascript", "regsvr32", "powershell", "cmd", "mshta", "bitsadmin", "certutil", "msiexec", "javaw", "msiexec", "%APPDATA%", @"\AppData\Roaming", "%PUBLIC%", @"C:\Users\Public", "%ProgramData%", @"C:\ProgramData", "%TEMP%", @"\AppData\Local\Temp")
-| where not(InitiatingProcessParentFileName =~ "OfficeClickToRun.exe" and InitiatingProcessFileName =~ "integrator.exe" and InitiatingProcessFolderPath in~ (@"c:\program files\microsoft office\root\integration\integrator.exe", @"c:\program files (x86)\microsoft office\root\integration\integrator.exe")) // Office C2R Integrator
+| where ProcessCommandLine has_any ("system","Defender", ".cmd", ".ps1", ".txt", ".vbs", ".py", ".js", ".lnk", ".bat", "wscript", "cscript","rundll", "javascript", "regsvr32", "powershell", "cmd", "mshta", "bitsadmin", "certutil", "msiexec", "javaw", "msiexec", "%APPDATA%", @"\AppData\Roaming", "%PUBLIC%", @"C:\Users\Public", "%ProgramData%", @"C:\ProgramData", "%TEMP%", @"\AppData\Local\Temp")
 | project TimeGenerated, AccountName, DeviceName, InitiatingProcessParentFileName, InitiatingProcessFileName, InitiatingProcessFolderPath, InitiatingProcessVersionInfoProductName, InitiatingProcessCommandLine, ProcessCommandLine
-
-Detects when a Scheduled Task is created with parameters that may be high risk. These may be used by a threat actor for persistence in a network or reoccurring execution of malicious code
-https://attack.mitre.org/techniques/T1053/005/
