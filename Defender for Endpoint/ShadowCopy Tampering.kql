@@ -1,3 +1,7 @@
 DeviceProcessEvents
-| where ProcessCommandLine has_any ("shadows", "shadowcopy", "shadowstorage", "vssadmin")
-    and ProcessCommandLine has_any ("delete", "resize")
+| where FileName == "vssadmin.exe"
+| where InitiatingProcessCommandLine has_any ("shadows", "shadowcopy", "shadowstorage", "vssadmin", "shadow") and InitiatingProcessCommandLine has_any ("create", "delete", "resize")
+| project TimeGenerated, AccountName, DeviceName, InitiatingProcessParentFileName, InitiatingProcessVersionInfoOriginalFileName, InitiatingProcessCommandLine, FileName, FolderPath, ProcessCommandLine
+
+// https://thedfirreport.com/2024/12/02/the-curious-case-of-an-egg-cellent-resume/
+// https://www.ired.team/offensive-security/credential-access-and-credential-dumping/dumping-domain-controller-hashes-via-wmic-and-shadow-copy-using-vssadmin
