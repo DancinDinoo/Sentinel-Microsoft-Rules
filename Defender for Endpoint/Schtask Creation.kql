@@ -2,3 +2,5 @@ DeviceProcessEvents
 | where FileName == "schtasks.exe"
 | where ProcessCommandLine has_any ("system","Defender", ".cmd", ".ps1", ".txt", ".vbs", ".py", ".js", ".lnk", ".bat", "wscript", "cscript","rundll", "javascript", "regsvr32", "powershell", "cmd", "mshta", "bitsadmin", "certutil", "msiexec", "javaw", "msiexec", "%APPDATA%", @"\AppData\Roaming", "%PUBLIC%", @"C:\Users\Public", "%ProgramData%", @"C:\ProgramData", "%TEMP%", @"\AppData\Local\Temp")
 | project TimeGenerated, AccountName, DeviceName, InitiatingProcessParentFileName, InitiatingProcessFileName, InitiatingProcessFolderPath, InitiatingProcessVersionInfoProductName, InitiatingProcessCommandLine, ProcessCommandLine
+
+// https://attack.mitre.org/techniques/T1053/005/
