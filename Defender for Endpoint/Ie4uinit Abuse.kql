@@ -3,7 +3,7 @@ let FileCreation = DeviceFileEvents
 | where not(FolderPath contains @"c:\windows\system32\" and FolderPath contains @"c:\windows\sysWOW64\")
 | project TableName = Type, TimeGenerated, AccountName = InitiatingProcessAccountName, DeviceName, InitiatingProcessCommandLine, InitiatingProcessFileName, FileName, FolderPath; // Moving/Copying legitimate binary to new directory
 let ProcessCreation = DeviceProcessEvents
-| where FileName == "ie4uinit.exe" 
-| where not(FolderPath contains @"c:\windows\system32\" and FolderPath contains @"c:\windows\sysWOW64\")
+| where ProcessVersionInfoOriginalFileName =~ "ie4uinit.exe" 
+| where not(FolderPath contains @"C:\Windows\System32\" or FolderPath contains @"c:\windows\sysWOW64\") and InitiatingProcessCommandLine has "BaseSettings"
 | project TableName = Type, TimeGenerated, AccountName, DeviceName, InitiatingProcessParentFileName, InitiatingProcessFileName, InitiatingProcessCommandLine, ProcessCommandLine, FolderPath, FileName;
 union FileCreation, ProcessCreation
