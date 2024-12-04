@@ -1,6 +1,6 @@
-DeviceFileEvents
+ACCADeviceFileEvents
 | where ActionType == "FileCreated"
-| where FolderPath matches regex @".:\\Users\\Public\\.*" or FolderPath matches regex @".:\\ProgramFiles\\.*"
-| where FileName has_any (".bat", ".ps1", ".js", ".dll", ".exe")
+| where FolderPath matches regex @".:\\Users\\Public\\.*" or FolderPath matches regex @".:\\ProgramFiles\\.*" or FolderPath matches regex @".:\\Users\\Admin\\.*"
+| where FileName has_any (".bat", ".ps1", ".js", ".dll", ".exe", ".msi")
 
 // https://www.volexity.com/blog/2024/11/22/the-nearest-neighbor-attack-how-a-russian-apt-weaponized-nearby-wi-fi-networks-for-covert-access/
