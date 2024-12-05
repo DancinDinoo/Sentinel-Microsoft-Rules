@@ -1,0 +1,16 @@
+let recipientthreshold = ; // Adjust based on risk tolerance
+let tenantallowlist = pack_array("") // Trusted third parties/vendors
+CloudAppEvents
+| where Application == "Microsoft Teams"
+| where ActionType == "ChatCreated"
+| extend CommunicationType = tostring(RawEventData.CommunicationType)
+| where CommunicationType =~ "OneonOne" 
+| extend APIId = tostring(parse_json(tostring(RawEventData.AppAccessContext)).APIId) | where isempty(APIId) // This will be 00000003-0000-0000-c000-000000000000 if it's sent via Graph
+| extend SenderUPN = tostring(parse_json(tostring(RawEventData.Members))[0].UPN) | extend SenderDisplayName = tostring(parse_json(tostring(RawEventData.Members))[0].DisplayName)| extend SenderTenantID = tostring(parse_json(tostring(RawEventData.Members))[0].OrganizationId)
+| extend RecipientUPN = tostring(parse_json(tostring(RawEventData.Members))[1].UPN) | extend RecipientDisplayName = tostring(parse_json(tostring(RawEventData.Members))[1].DisplayName)| extend RecipientTenantID = tostring(parse_json(tostring(RawEventData.Members))[1].OrganizationId)
+| where SenderTenantID !in (tenantallowlist)
+| summarize NumberOfRecipients = count(), Recipients = make_set(RecipientUPN) by SenderUPN, SenderTenantID
+| where NumberOfRecipients > recipientthreshold
+
+// There is a version of this for OfficeActivity as well if you want to use that/don't have access to CloudAppEvents
+// https://github.com/DancinDinoo/Sentinel-Microsoft-Rules/edit/main/Office%20365/Teams%20message%20spray.kql
