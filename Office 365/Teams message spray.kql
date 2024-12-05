@@ -1,4 +1,4 @@
-let recipientthreshold = 3; // Adjust based on risk tolerance
+let recipientthreshold = ; // Adjust based on risk tolerance
 let tenantallowlist = pack_array(""); // Trusted third parties
 OfficeActivity
 | where TimeGenerated > ago(3h)
