@@ -1,6 +1,7 @@
 let recipientthreshold = ; // Adjust based on risk tolerance
 let tenantallowlist = pack_array("") // Trusted third parties/vendors
 CloudAppEvents
+| where TimeGenerated > ago(3h)
 | where Application == "Microsoft Teams"
 | where ActionType == "ChatCreated"
 | extend CommunicationType = tostring(RawEventData.CommunicationType)
