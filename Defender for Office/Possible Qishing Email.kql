@@ -1,0 +1,15 @@
+let phishingkeywords = pack_array("Help", "Urgent", "Bank", "Microsoft", "Tech", "Now", "Payment", "Account", "Pay", "Recover", "Lose", "Password", "Support", "Azure", "Amazon", "Christmas", "Shopping", "Verify", "Authorize", "Authorise", "login", "authenticate", "authentication", "confirmation", "confirm", "office", "365"); // Generic Phishing Terms
+ACCAEmailUrlInfo
+| where UrlLocation == "QRCode" // Only emails with a QRCode
+| join (ACCAEmailEvents 
+| where EmailDirection == "Inbound"
+| where DeliveryAction == "Delivered"
+| extend CompAuthResult = tostring(parse_json(AuthenticationDetails).CompAuth)
+| extend DKIMResult = tostring(parse_json(AuthenticationDetails).DKIM)
+| extend DMARCResult = tostring(parse_json(AuthenticationDetails).DMARC)
+| extend SPFResult = tostring(parse_json(AuthenticationDetails).SPF)
+| where Subject has_any(phishingkeywords)
+) on NetworkMessageId
+| project EmailRecievedTime = TimeGenerated, NetworkMessageId, SenderDisplayName, SenderFromAddress, SenderIPv4, RecipientEmailAddress, Subject, Url, UrlCount, SPFResult, DKIMResult, DMARCResult, CompAuthResult
+
+// Merry Christmas all :)
