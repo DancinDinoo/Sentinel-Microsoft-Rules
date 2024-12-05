@@ -1,7 +1,7 @@
 let phishingkeywords = pack_array("Help", "Urgent", "Bank", "Microsoft", "Tech", "Now", "Payment", "Account", "Pay", "Recover", "Lose", "Password", "Support", "Azure", "Amazon", "Christmas", "Shopping", "Verify", "Authorize", "Authorise", "login", "authenticate", "authentication", "confirmation", "confirm", "office", "365"); // Generic Phishing Terms
-ACCAEmailUrlInfo
+EmailUrlInfo
 | where UrlLocation == "QRCode" // Only emails with a QRCode
-| join (ACCAEmailEvents 
+| join (EmailEvents 
 | where EmailDirection == "Inbound"
 | where DeliveryAction == "Delivered"
 | extend CompAuthResult = tostring(parse_json(AuthenticationDetails).CompAuth)
