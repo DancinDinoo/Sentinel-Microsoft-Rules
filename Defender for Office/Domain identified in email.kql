@@ -1,6 +1,6 @@
 let Domains = externaldata(BadDomains:string)
 [h@"https://raw.githubusercontent.com/xRuffKez/NRD/refs/heads/main/lists/30-day_phishing/domains-only/nrd-phishing-30day.txt"]
-| where BadDomains !startswith "#"; // Removing comments 
+| where BadDomains !startswith "#"; // Removing comments (CHANGE THIS IF YOU USE A DIFFERENT LIST)
 EmailUrlInfo
 | where UrlDomain in~(BadDomains)
 | join (EmailEvents 
