@@ -2,8 +2,9 @@ let Domains = externaldata(BadDomains:string)
 [h@"https://raw.githubusercontent.com/xRuffKez/NRD/refs/heads/main/lists/30-day_phishing/domains-only/nrd-phishing-30day.txt"]
 | where BadDomains !startswith "#"; // Removing comments 
 EmailUrlInfo
-| where UrlDomain in~(Domains)
-| join EmailEvents on NetworkMessageId
+| where UrlDomain in~(BadDomains)
+| join (EmailEvents 
+| where EmailDirection == "Inbound" and DeliveryAction == "Delivered")
 
 // This is pointed currently at a list being updated with new registered domains you can substitute in with really any other list I'll stick other examples below
 // Parsing requirements will change depending on the list you choose to use, but basic query stays the same
