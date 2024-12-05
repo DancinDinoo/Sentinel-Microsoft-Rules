@@ -13,3 +13,4 @@ OfficeActivity
 | where NumberofRecipients >= recipientthreshold
 
 // I've recreated this in CloudAppEvents as well, so you've got the option of both depending on what your log capabilities are :)
+// https://github.com/DancinDinoo/Sentinel-Microsoft-Rules/blob/main/CloudAppEvents/Teams%20message%20spray.kql
