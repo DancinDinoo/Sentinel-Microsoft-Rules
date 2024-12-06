@@ -9,7 +9,7 @@ OfficeActivity
 | extend RecipientUPN = Members.[1].UPN | extend RecipientName = tostring(Members.[1].DisplayName) | extend tostring(RecipientTenantID = Members[1].OrganizationId)
 | summarize Recipients = make_list(RecipientUPN), FirstEmailSeen = min(TimeGenerated), LatestEmailSeen = max(TimeGenerated), NumberofRecipients = count() by SenderUPN, SenderDisplayName, SenderTenantID
 | where Recipients != "[]" // Blank fields with Recipient/Sender Info is very likely to be due to Graph emails, its a limitation of this log source
-| where SenderTenantId !in (tenantallowlist)
+| where SenderTenantID !in (tenantallowlist)
 | where NumberofRecipients >= recipientthreshold
 
 // I've recreated this in CloudAppEvents as well, so you've got the option of both depending on what your log capabilities are :)
