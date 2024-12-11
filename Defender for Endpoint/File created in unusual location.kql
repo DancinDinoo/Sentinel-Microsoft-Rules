@@ -1,7 +1,8 @@
 DeviceFileEvents
 | where ActionType == "FileCreated"
-| where FolderPath matches regex @"(?i).:\\Users\\Public\\.*" or FolderPath matches regex @"(?i).:\\ProgramFiles\\.*" or FolderPath matches regex @"(?i).:\\Users\\Admin\\.*"
-| where FileName has_any (".bat", ".ps1", ".js", ".dll", ".exe", ".msi", ".save")
+| extend FolderPathCheck = split(FolderPath, '\\') // This is for ProgramData, because there's so many subdirectories
+| extend Count = array_length(FolderPathCheck) // If its in the root directory, there should only be 3 parts, C:\programdata\badfile
+| where FolderPath matches regex @"(?i).:\\Users\\Public\\.*" or FolderPath matches regex @"(?i).:\\Users\\Admin\\.*" or FolderPath matches regex @"(?i).:\\ProgramData\\.*" and Count == "3"
 | project TimeGenerated, ActionType, DeviceName, InitiatingProcessAccountName, InitiatingProcessAccountUpn, InitiatingProcessVersionInfoFileDescription, InitiatingProcessCommandLine, InitiatingProcessFileName,InitiatingProcessFolderPath, FileMD5 = MD5, FileName, FolderPath
 
 // https://www.volexity.com/blog/2024/11/22/the-nearest-neighbor-attack-how-a-russian-apt-weaponized-nearby-wi-fi-networks-for-covert-access/
