@@ -1,3 +1,5 @@
 SigninLogs
 | where UserAgent contains "Axios"
 | project TimeGenerated, AppDisplayName, DeviceDetail, IPAddress, ResultType, UserAgent, UserPrincipalName
+
+https://fieldeffect.com/blog/field-effect-discovers-m365-adversary-in-the-middle-campaign
