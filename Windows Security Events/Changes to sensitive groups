@@ -1,0 +1,4 @@
+SecurityEvent
+| where EventID in ("4756", "4728", "4732")
+| where TargetUserName in~ ("Enterprise Admins", "Domain Admins", "Schema Admins", "Adminstrators")
+| project TimeGenerated, AccountType, UserAdded = Account, TargetGroup = TargetUserName, Activity, Computer, MemberName
