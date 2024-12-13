@@ -1,0 +1,5 @@
+DeviceProcessEvents
+| where ProcessVersionInfoOriginalFileName == "reg.exe" // Must use DeviceProcessEvents to account for scripts because it appears as WMI from Powershell which is too generic
+| where ProcessCommandLine contains @"\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" or ProcessCommandLine contains @"Software\Microsoft\Windows NT\CurrentVersion\Windows" or ProcessCommandLine contains @"Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\Run" or ProcessCommandLine contains @"System\CurrentControlSet\Control\Session Manager" or ProcessCommandLine has_any (@"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders", @"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders") // Commonly used registry locations for persistence covers both LM/LU
+| where ProcessCommandLine contains "add" and ProcessCommandLine has_any ("wsf", "js", "wsh", "ps1", "bat", "vbs", "cmd", "lnk", "exe", "dll") // Commonly abused file types
+| project TimeGenerated, AccountName, DeviceName, InitiatingProcessParentFileName, InitiatingProcessCommandLine, InitiatingProcessFileName, InitiatingProcessTokenElevation, ProcessCommandLine
