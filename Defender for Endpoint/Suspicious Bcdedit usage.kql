@@ -1,4 +1,4 @@
 DeviceProcessEvents 
-| where FileName =~ "bcdedit.exe"
+| where ProcessVersionInfoOriginalFileName == "bcdedit.exe"
 | where ProcessCommandLine contains "set"
-| where ProcessCommandLine has_any ("recoveryenabled", "no", "bootstatuspolicy", "ignoreallfailures") 
+| where ProcessCommandLine has_any ("recoveryenabled", "no", "bootstatuspolicy", "ignoreallfailures")
