@@ -1,6 +1,6 @@
 AuditLogs
 | extend Hour = datetime_part('hour', TimeGenerated)
-| where Hour between (00 .. 08) or Hour between (17 .. 24)
+| where Hour between (00 .. 09) or Hour between (17 .. 24)
 | extend Role = TargetResources[0].displayName
 | extend TargetUser = TargetResources[2].displayName
 | where OperationName in~("Add member to role completed (PIM activation)", "Add eligible member to role in PIM completed (permanent)")
