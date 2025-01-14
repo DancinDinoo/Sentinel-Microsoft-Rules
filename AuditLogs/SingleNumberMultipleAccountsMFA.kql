@@ -1,5 +1,7 @@
 Believe this was written by @reprise_99 on Twitter or reprise99 on Github
 
+//Test
+
 AuditLogs
 | where TargetResources has "PhoneNumber"
 | where OperationName =~ "Update user"
