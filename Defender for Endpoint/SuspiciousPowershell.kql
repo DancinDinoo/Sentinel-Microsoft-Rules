@@ -1,7 +1,6 @@
 DeviceProcessEvents
-| where FileName == "powershell.exe"
-| where ProcessCommandLine has_any('-nop', '-noni', 'invoke-expression', 'iex', '.downloadstring', 'downloadfile', '-e', '-en', '-enc', '-encodedcommand', 'invoke-webrequest', '-uri')
-| extend EncodedCommand = extract(@'\s+([A-Za-z0-9+/]{20}\S+$)', 1, ProcessCommandLine)
+| where ProcessVersionInfoOriginalFileName =~ "PowerShell.EXE"
+| where ProcessCommandLine has_any('-nop', '-noni', 'invoke-expression', 'iex', '.downloadstring', 'downloadfile', '-e', '-en', '-enc', '-encodedcommand', 'invoke-webrequest', '-uri', “IWR”, “Net.WebClient”)| extend EncodedCommand = extract(@'\s+([A-Za-z0-9+/]{20}\S+$)', 1, ProcessCommandLine)
 | extend Command = base64_decode_tostring(EncodedCommand)
 | sort by TimeGenerated
 
