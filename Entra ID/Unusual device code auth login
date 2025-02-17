@@ -1,0 +1,20 @@
+let lookback = 14d;
+let query_period = 1d;
+let trustedIPs = SigninLogs
+| where TimeGenerated between (ago(lookback) .. ago(query_period))
+| where AuthenticationProtocol == "deviceCode"
+| summarize goodips = make_set(IPAddress) by UserPrincipalName;
+let trusteduseragents = SigninLogs
+| where TimeGenerated between (ago(lookback) .. ago(query_period))
+| where AuthenticationProtocol == "deviceCode"
+| summarize goodips = make_set(UserAgent) by UserPrincipalName;
+union isfuzzy = true (SigninLogs 
+| where TimeGenerated > ago(query_period)
+| lookup kind=leftouter trustedIPs on UserPrincipalName
+| where AuthenticationProtocol == "deviceCode"
+),
+(SigninLogs
+| where TimeGenerated > ago(query_period)
+| lookup kind=leftouter trusteduseragents on UserPrincipalName
+| where AuthenticationProtocol == "deviceCode"
+)
